@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body style="text-align: center;" onload="fntbl()">
+    <input type="text" placeholder="Name" id="name"><br><br>
+    <input type="text" placeholder="Address" id="adrs"><br><br>
+    <input type="text" placeholder="Email" id="email"><br><br>
+    <button onclick="fnsubmit()">Submit</button>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>E-mail</th>
+            <th colspan="2">Modify</th>
+        </tr>
+    </table>
+    <!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    Launch demo modal
+  </button> -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Update</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="id2" hidden>
+            <input type="text" placeholder="Name" id="name2"><br><br>
+            <input type="text" placeholder="Address" id="adrs2"><br><br>
+            <input type="text" placeholder="Email" id="email2"><br><br>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="fupdate()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <script>
+        $.ajaxSetup({headers:{"X-CSRFToken":'{{csrf_token}}'}});
+        function fnsubmit(){
+            $.ajax({
+                url:'/ajax/',
+                type:'POST',
+                data:{
+                    name1:$('#name').val(),
+                    add1:$('#adrs').val(),
+                    mail1:$('#email').val()
+                },
+                success:function(response){
+                    alert(response.msg)
+                    fntbl()
+                }
+            })
+        }
+        function fntbl(){
+            $.ajax({
+                url:'/ajx2/',
+                type:'GET',
+                success:function(response){
+                    console.log(response.ajx)
+                    $('.tr').remove()
+                    for(i=0;i<response.ajx.length;i++){
+                        $('table').append("<tr class='tr'><td>"+response.ajx[i].Name+"</td><td>"+response.ajx[i].Address+"</td><td>"+response.ajx[i].E_mail+"</td><td><button onclick='fnedit("+response.ajx[i].ID+")' data-toggle='modal' data-target='#exampleModal'>Update</button><button onclick='fndelete("+response.ajx[i].ID+")'>Delete</button></td></tr>")
+                    }
+                }
+            })
+        }
+        function fnedit(a){
+            $.ajax({
+                url:'/edit/',
+                type:'POST',
+                data:{
+                    id:a
+                },
+                success:function(response){
+                    $('#id2').val(response.get_details[0].id)
+                    $('#name2').val(response.get_details[0].Name)
+                    $('#adrs2').val(response.get_details[0].Address)
+                    $('#email2').val(response.get_details[0].Email)
+                }
+            })
+        }
+        function fndelete(b){
+            $.ajax({
+                url:'/delete/',
+                type:'POST',
+                data:{
+                    id:b
+                },
+                success:function(response){
+                    alert(response.msg3)
+                    fntbl()
+                }
+            })
+        }
+        function fupdate(){
+            $.ajax({
+                url:'/update/',
+                type:'POST',
+                data:{
+                    uid1:$('#id2').val(),
+                    uname1:$('#name2').val(),
+                    uadrs1:$('#adrs2').val(),
+                    uemail1:$('#email2').val()
+                },
+                success:function(response){
+                    alert(response.msg2)
+                    fntbl()
+                }
+            })
+           
+        }
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+</body>
+</html>
